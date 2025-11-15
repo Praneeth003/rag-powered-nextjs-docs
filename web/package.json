@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "fetch-nextjs-docs": "node scripts/fetch-nextjs-docs.js"
   },
   "dependencies": {
     "react": "19.1.0",
