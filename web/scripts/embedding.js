@@ -1,4 +1,4 @@
-// This script indexes the Next.js documentation and saves embeddings.json file it to the data/nextjs-docs-index directory
+// This script indexes the Next.js documentation and saves embeddings.json file it to the data directory
 
 import fs from 'fs/promises';
 import OpenAI from 'openai';
