@@ -3,6 +3,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { MarkdownTextSplitter } from '@langchain/textsplitters';
+import  matter  from 'gray-matter';
 
 const docsDir = "./data/nextjs-docs-markdown";
 const chunksDir = "./data/nextjs-docs-chunks";
@@ -34,12 +35,21 @@ async function chunkDocs(directoryPath) {
         }
         else if(item.isFile() && isMdxOrMd(item.name)){
             const docContent = await fs.readFile(path.join(directoryPath, item.name), 'utf8');
+
+            // Obtain the title and description from the frontmatter of the file
+            const { data } = matter(docContent);
+            const title = data.title;
+            const description = data.description;
+            console.log(title, description);
+
             const chunks = await splitter.splitText(docContent);
             chunksArray.push({
                 id: item.name,
                 content: chunks,
                 metadata: {
                     sourcePath: path.join(directoryPath, item.name),
+                    title: title,
+                    description: description,
                 },
             });
         }
