@@ -2,11 +2,15 @@
 
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { MarkdownTextSplitter } from '@langchain/textsplitters';
-import  matter  from 'gray-matter';
+import matter from 'gray-matter';
 
-const docsDir = "./data/nextjs-docs-markdown";
-const chunksDir = "./data/nextjs-docs-chunks";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const docsDir = path.join(__dirname, '..', 'data', 'nextjs-docs-markdown');
+const chunksDir = path.join(__dirname, '..', 'data', 'nextjs-docs-chunks');
 const chunksFile = path.join(chunksDir, "chunks.json");
 const chunksArray = [];
 
@@ -34,7 +38,8 @@ async function chunkDocs(directoryPath) {
             await chunkDocs(path.join(directoryPath, item.name));
         }
         else if(item.isFile() && isMdxOrMd(item.name)){
-            const docContent = await fs.readFile(path.join(directoryPath, item.name), 'utf8');
+            const filePath = path.join(directoryPath, item.name);
+            const docContent = await fs.readFile(filePath, 'utf8');
 
             // Obtain the title and description from the frontmatter of the file
             const { data } = matter(docContent);
@@ -43,15 +48,16 @@ async function chunkDocs(directoryPath) {
             console.log(title, description);
 
             const chunks = await splitter.splitText(docContent);
-            chunksArray.push({
-                id: item.name,
-                content: chunks,
-                metadata: {
-                    sourcePath: path.join(directoryPath, item.name),
-                    title: title,
-                    description: description,
-                },
-            });
+            for(let i = 0; i < chunks.length; i++){
+                chunksArray.push({
+                    id: `${item.name}#${i}`,
+                    metadata: {
+                        title: title,
+                        description: description,
+                    },
+                    content: chunks[i],
+                });
+            }
         }
         else{
             console.log(`Skipped ${item.name}`);
@@ -61,5 +67,10 @@ async function chunkDocs(directoryPath) {
 
 await chunkDocs(docsDir);
 
-await fs.writeFile(chunksFile, JSON.stringify(chunksArray, null), 'utf8');
+// Create the chunks directory if it doesn't exist
+await fs.mkdir(chunksDir, { recursive: true });
+
+// Write the chunks to the file
+await fs.writeFile(chunksFile, JSON.stringify(chunksArray, null, 2), 'utf8');
+
 console.log(`Wrote ${chunksArray.length} chunks to ${chunksFile}`);

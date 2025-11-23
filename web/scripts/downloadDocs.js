@@ -1,12 +1,15 @@
 // This script fetches the Next.js documentation from the Next.js GitHub repository and saves it to the data/nextjs-docs-markdown directory
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 const owner = 'vercel';
 const repo = 'next.js';
 const branch = 'canary';
 const docsDir = 'docs';
-const outputDir = "./data/nextjs-docs-markdown";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const outputDir = path.join(__dirname, '..', 'data', 'nextjs-docs-markdown');
 
 // Helper function to check if a file is an MDX or MD file
 function isMdxOrMd(fileName) {
