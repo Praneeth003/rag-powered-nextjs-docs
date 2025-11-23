@@ -7,6 +7,7 @@ import { MarkdownTextSplitter } from '@langchain/textsplitters';
 const docsDir = "./data/nextjs-docs-markdown";
 const chunksDir = "./data/nextjs-docs-chunks";
 const chunksFile = path.join(chunksDir, "chunks.json");
+const chunksArray = [];
 
 // Configure chunks
 const defaultChunkSize = 1200;
@@ -34,10 +35,13 @@ async function chunkDocs(directoryPath) {
         else if(item.isFile() && isMdxOrMd(item.name)){
             const docContent = await fs.readFile(path.join(directoryPath, item.name), 'utf8');
             const chunks = await splitter.splitText(docContent);
-            console.log(`Chunked ${item.name} into ${chunks.length} chunks`);
-            for(const chunk of chunks){
-                console.log(chunk);
-            }
+            chunksArray.push({
+                id: item.name,
+                content: chunks,
+                metadata: {
+                    sourcePath: path.join(directoryPath, item.name),
+                },
+            });
         }
         else{
             console.log(`Skipped ${item.name}`);
@@ -45,4 +49,7 @@ async function chunkDocs(directoryPath) {
     }
 }
 
-chunkDocs(docsDir);
+await chunkDocs(docsDir);
+
+await fs.writeFile(chunksFile, JSON.stringify(chunksArray, null), 'utf8');
+console.log(`Wrote ${chunksArray.length} chunks to ${chunksFile}`);
