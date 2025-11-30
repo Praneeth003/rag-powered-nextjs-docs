@@ -22,14 +22,22 @@ const pairedEmbeddings = JSON.parse(await fs.readFile(pairedEmbeddingsFile, 'utf
 
 // Upsert the embeddings to the Supabase database
 for(const embedding of pairedEmbeddings){
-    await supabase.from('documents').insert({
+    const { error } = await supabase.from('nextjs_docs_chunks').upsert({
         id: embedding.id,
         content: embedding.content,
-        title: embedding.metadata.title,
-        description: embedding.metadata.description,
+        title: embedding?.metadata?.title ?? null,
+        description: embedding?.metadata?.description ?? null,
         embedding: embedding.embedding,
-    });
+    }, { onConflict: 'id' });
+    if (error) {
+        console.error(`Error upserting ${embedding.id}: ${error.message}`);
+        process.exit(1);
+    } else {
+        console.log(`Upserted ${embedding.id}`);
+    }
 }
+
+console.log('Done');
 
 
 
