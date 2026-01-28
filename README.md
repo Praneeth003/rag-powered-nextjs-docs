@@ -357,10 +357,4 @@ rag-powered-nextjs-docs/
 | `NEXT_PUBLIC_SUPABASE_URL`      | Supabase project URL                   | Yes      |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous/public key          | Yes      |
 
-## License
 
-[Add your license here]
-
-## Contributing
-
-[Add contribution guidelines here]
