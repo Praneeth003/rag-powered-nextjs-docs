@@ -45,9 +45,23 @@ export async function POST(request: NextRequest) {
 
     // Expand short or vague queries to improve retrieval
     const expandQuery = async (originalQuery: string): Promise<string> => {
+        // Don't expand single-word queries that are clearly not technical terms
+        const words = originalQuery.trim().split(/\s+/);
+        const isSingleWord = words.length === 1;
+
+        // Common non-technical single words that shouldn't be expanded
+        const nonTechnicalWords = new Set([
+            'book', 'weather', 'time', 'date', 'hello', 'hi', 'test', 'help',
+            'what', 'how', 'why', 'when', 'where', 'who', 'which'
+        ]);
+
+        if (isSingleWord && nonTechnicalWords.has(originalQuery.toLowerCase())) {
+            return originalQuery; // Don't expand obviously irrelevant queries
+        }
+
         // If query is short or doesn't contain context keywords, expand it
-        const isShortQuery = originalQuery.split(' ').length <= 5;
-        const hasContext = /\b(next\.?js|nextjs|react|web|framework|documentation)\b/i.test(originalQuery);
+        const isShortQuery = words.length <= 5;
+        const hasContext = /\b(next\.?js|nextjs|react|web|framework|documentation|api|route|component|page|layout)\b/i.test(originalQuery);
 
         if (isShortQuery && !hasContext) {
             try {
@@ -140,6 +154,19 @@ export async function POST(request: NextRequest) {
             }, { status: 200 });
         }
 
+        // Check if the best match is too low - indicates irrelevant query
+        // Increased threshold to catch false positives (like "book" matching SPAs at 55-59%)
+        const bestMatchSimilarity = relevantChunks[0]?.similarity || 0;
+        const minimumRelevanceThreshold = 0.60; // Reject if best match is below this (legitimate Next.js queries typically score 60%+)
+
+        if (bestMatchSimilarity < minimumRelevanceThreshold) {
+            console.log(`Query appears irrelevant. Best match similarity: ${bestMatchSimilarity.toFixed(3)}, Query: "${query}"`);
+            return NextResponse.json({
+                error: 'Your question doesn\'t appear to be related to Next.js documentation.',
+                suggestion: 'Please ask questions about Next.js features, concepts, or usage. For example: "What is Server-Side Rendering?", "How do I use API routes?", or "What are Server Components?"'
+            }, { status: 200 });
+        }
+
         console.log(`Found ${relevantChunks.length} relevant chunks (similarity range: ${relevantChunks[relevantChunks.length - 1]?.similarity.toFixed(3)} - ${relevantChunks[0]?.similarity.toFixed(3)})`);
 
         // Create the context text from retrieved chunks with better formatting
@@ -166,13 +193,14 @@ export async function POST(request: NextRequest) {
                     content: `You are an expert technical documentation assistant. Your role is to provide accurate, comprehensive, and well-structured answers based on the provided documentation context.
 
 Guidelines:
-- Answer ONLY using information from the provided context chunks
-- If the context doesn't contain enough information, clearly state what information is missing
+- Answer using information from the provided context chunks
+- Provide the best answer you can with the available context - focus on what IS in the context, not what's missing
 - Structure your answer with clear sections, bullet points, or numbered lists when appropriate
 - Include code examples from the context when relevant
 - Be concise but thorough - prioritize accuracy over verbosity
 - If multiple chunks contain relevant information, synthesize them into a coherent answer
-- Use markdown formatting for better readability (headers, code blocks, lists)`,
+- Use markdown formatting for better readability (headers, code blocks, lists)
+- DO NOT add sections like "Additional Information Needed" or mention missing information - just provide the answer based on what's available`,
                 },
                 {
                     role: 'user',
@@ -184,7 +212,7 @@ ${contextText}
 
 Question: ${query}${wasExpanded ? ` (expanded from: "${query}")` : ''}
 
-Please provide a comprehensive, well-structured answer based on the context above. If the context doesn't fully answer the question, indicate what additional information would be helpful.`,
+Please provide a comprehensive, well-structured answer based on the context above. Answer what you can from the provided context. Do not mention missing information or add any "Additional Information Needed" sections.`,
                 },
             ],
             temperature: 0.3, // Lower temperature for more focused, consistent responses
