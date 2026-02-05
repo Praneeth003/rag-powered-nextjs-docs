@@ -155,9 +155,10 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if the best match is too low - indicates irrelevant query
-        // Increased threshold to catch false positives (like "book" matching SPAs at 55-59%)
         const bestMatchSimilarity = relevantChunks[0]?.similarity || 0;
-        const minimumRelevanceThreshold = 0.60; // Reject if best match is below this (legitimate Next.js queries typically score 60%+)
+        // If the query mentions Next.js (our doc topic), use a relaxed bar so comparisons (vs Nest.js, Java, React, etc.) get answers
+        const mentionsNextJs = /\bnext\.?js\b|\bnextjs\b/i.test(query);
+        const minimumRelevanceThreshold = mentionsNextJs ? 0.50 : 0.60;
 
         if (bestMatchSimilarity < minimumRelevanceThreshold) {
             console.log(`Query appears irrelevant. Best match similarity: ${bestMatchSimilarity.toFixed(3)}, Query: "${query}"`);
