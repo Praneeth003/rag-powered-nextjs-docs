@@ -75,7 +75,7 @@ export default function DocSearch() {
         <button
           type="submit"
           disabled={status === "loading" || !query.trim()}
-          className="px-6 py-3 rounded-[var(--radius)] bg-[var(--accent)] text-white font-medium hover:bg-[var(--accent-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-6 py-3 rounded-[var(--radius)] bg-[var(--accent)] text-white font-medium cursor-pointer hover:bg-[var(--accent-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {status === "loading" ? "Searching…" : "Search"}
         </button>

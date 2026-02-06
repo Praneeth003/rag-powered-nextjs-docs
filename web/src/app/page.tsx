@@ -19,7 +19,7 @@ export default function Home() {
         {/* Hero */}
         <section className="text-center max-w-2xl mx-auto mb-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-[var(--foreground)] tracking-tight mb-4">
-            Search the Next.js docs with AI
+            Search the Next.js docs using RAG
           </h1>
           <p className="text-[var(--muted)] text-lg leading-relaxed">
             Ask questions in plain English. We find the right docs and generate clear, sourced answers—no digging through pages.

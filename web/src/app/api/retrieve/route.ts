@@ -43,6 +43,43 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Query must be a non-empty string' }, { status: 400 });
     }
 
+    // Use AI to filter gibberish, off-topic, or non-questions so we don't expand or search
+    const isValidQuery = async (q: string): Promise<boolean> => {
+        try {
+            const res = await openai.chat.completions.create({
+                model: 'gpt-4o-mini',
+                messages: [
+                    {
+                        role: 'system',
+                        content: `You classify whether a user input is a genuine question or topic that could be answered by Next.js documentation. Reply with exactly one word: YES or NO.
+
+Say NO for: gibberish (e.g. asdf, qwerty), placeholder text, greetings only (hi, hello), single random words, off-topic questions (weather, sports, cooking), or anything that is clearly not about Next.js, React, or web development.
+
+Say YES for: any real question about Next.js, React, web dev, or documentation (e.g. "What is SSR?", "how do I use Link?", "navigation", "api routes").`,
+                    },
+                    {
+                        role: 'user',
+                        content: q,
+                    },
+                ],
+                temperature: 0.1,
+                max_tokens: 5,
+            });
+            const answer = res.choices[0]?.message?.content?.trim().toUpperCase();
+            return answer === 'YES' || (answer?.startsWith('YES') ?? false);
+        } catch (err) {
+            console.error('Query validation failed, allowing query:', err);
+            return true; // On API failure, allow the query so we don't block users
+        }
+    };
+
+    if (!(await isValidQuery(query))) {
+        return NextResponse.json({
+            error: "That doesn't look like a question about Next.js.",
+            suggestion: 'Try asking something like: "What is Server-Side Rendering?", "How do I use the Link component?", or "What are Server Components?"',
+        }, { status: 200 });
+    }
+
     // Expand short or vague queries to improve retrieval
     const expandQuery = async (originalQuery: string): Promise<string> => {
         // Don't expand single-word queries that are clearly not technical terms
