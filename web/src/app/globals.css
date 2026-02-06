@@ -2,17 +2,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #faf9f7;
+  --background: #f6f5f1;
   --foreground: #1a1a1a;
   --muted: #6b7280;
   --accent: #0d9488;
   --accent-hover: #0f766e;
   --card: #ffffff;
-  --card-border: #e5e7eb;
+  --card-border: #e8e6e1;
   --radius: 12px;
   --radius-lg: 16px;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 40px -10px rgba(0, 0, 0, 0.12);
+  --bg-pattern: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0.06) 1px,
+    transparent 1px
+  );
+  --bg-pattern-size: 20px 20px;
 }
 
 @theme inline {
@@ -26,7 +32,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --background: #0f0f0f;
+    --background: #111111;
     --foreground: #f4f4f5;
     --muted: #a1a1aa;
     --accent: #2dd4bf;
@@ -35,12 +41,18 @@
     --card-border: #27272a;
     --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 10px 40px -10px rgba(0, 0, 0, 0.4);
+    --bg-pattern: radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.055) 1px,
+      transparent 1px
+    );
+    --bg-pattern-size: 20px 20px;
   }
 }
 
 /* Manual theme override (from switcher) */
 [data-theme="dark"] {
-  --background: #0f0f0f;
+  --background: #111111;
   --foreground: #f4f4f5;
   --muted: #a1a1aa;
   --accent: #2dd4bf;
@@ -49,22 +61,43 @@
   --card-border: #27272a;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 10px 40px -10px rgba(0, 0, 0, 0.4);
+  --bg-pattern: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.055) 1px,
+    transparent 1px
+  );
+  --bg-pattern-size: 20px 20px;
 }
 
 [data-theme="light"] {
-  --background: #faf9f7;
+  --background: #f6f5f1;
   --foreground: #1a1a1a;
   --muted: #6b7280;
   --accent: #0d9488;
   --accent-hover: #0f766e;
   --card: #ffffff;
-  --card-border: #e5e7eb;
+  --card-border: #e8e6e1;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 40px -10px rgba(0, 0, 0, 0.12);
+  --bg-pattern: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0.06) 1px,
+    transparent 1px
+  );
+  --bg-pattern-size: 20px 20px;
+}
+
+html {
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--background);
+  background-image: var(--bg-pattern);
+  background-size: var(--bg-pattern-size);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: "DM Sans", system-ui, sans-serif;
 }

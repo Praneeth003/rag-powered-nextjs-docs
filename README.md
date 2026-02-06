@@ -356,5 +356,3 @@ rag-powered-nextjs-docs/
 | `OPENAI_API_KEY`                | OpenAI API key for embeddings and chat | Yes      |
 | `NEXT_PUBLIC_SUPABASE_URL`      | Supabase project URL                   | Yes      |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous/public key          | Yes      |
-
-

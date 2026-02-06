@@ -2,16 +2,30 @@ import Link from "next/link";
 import DocSearch from "@/components/DocSearch";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 
+function LogoIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <path d="M22 8H12a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V14l-8-6Z" />
+      <path d="M22 8v6h6" />
+      <circle cx="18" cy="22" r="4" />
+      <path d="M20.5 24.5 23 27" />
+    </svg>
+  );
+}
+
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b border-[var(--card-border)] bg-[var(--card)]/80 backdrop-blur-sm sticky top-0 z-10">
+      <header className="border-b border-[var(--card-border)] bg-[var(--background)]/60 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/" className="font-semibold text-3xl text-[var(--foreground)]">
+            <Link href="/" className="flex items-center gap-1.5 font-semibold text-3xl text-[var(--foreground)]">
+              <span className="shrink-0 w-[1.75em] h-[1.75em] text-[var(--foreground)]">
+                <LogoIcon className="w-full h-full" />
+              </span>
               Next.js Docs Search
             </Link>
-            <span className="text-xs font-medium px-2 py-1 rounded-md bg-[var(--accent)]/10 text-[var(--accent)]">
+            <span className="text-xs font-semibold px-2 py-1 rounded-md bg-[var(--accent)]/10 text-[var(--accent)]">
               RAG-powered
             </span>
           </div>
@@ -23,7 +37,7 @@ export default function Home() {
         {/* Hero */}
         <section className="text-center max-w-2xl mx-auto mb-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-[var(--foreground)] tracking-tight mb-4">
-            Search the Next.js docs using RAG
+            Search the official Next.js docs using RAG
           </h1>
           <p className="text-[var(--muted)] text-lg leading-relaxed">
             Ask questions in plain English. We find the right docs and generate clear, sourced answers—no digging through pages.

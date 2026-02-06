@@ -39,7 +39,7 @@ export default function ThemeSwitcher() {
       <button
         type="button"
         aria-label="Toggle theme"
-        className="w-9 h-9 rounded-lg border border-[var(--card-border)] bg-[var(--card)] flex items-center justify-center text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+        className="w-9 h-9 rounded-lg border border-[var(--card-border)] bg-[var(--card)] flex items-center justify-center text-[var(--muted)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
       >
         <span className="w-4 h-4" />
       </button>
@@ -51,7 +51,7 @@ export default function ThemeSwitcher() {
       type="button"
       onClick={toggle}
       aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
-      className="w-6 h-6 rounded-md border border-[var(--card-border)] bg-[var(--card)] flex items-center justify-center text-[var(--muted)] hover:text-[var(--foreground)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2"
+      className="w-8 h-8 rounded-md border border-[var(--card-border)] bg-[var(--card)] flex items-center justify-center text-[var(--muted)] hover:text-[var(--foreground)] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2"
     >
       {theme === "light" ? (
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
