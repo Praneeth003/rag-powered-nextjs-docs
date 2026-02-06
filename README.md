@@ -111,7 +111,7 @@ $$;
 
 ### 4. Configure Environment Variables
 
-Create a `.env.local` file in the `web` directory:
+Create a `.env.local` file in the `web` directory (Next.js also loads `.env`; use either, but do not commit these files):
 
 ```bash
 cd web
@@ -164,6 +164,16 @@ The server will start on [http://localhost:3000](http://localhost:3000)
 
 ## Usage
 
+### Web Interface
+
+After starting the dev server, open [http://localhost:3000](http://localhost:3000) in your browser. You can:
+
+- **Search**: Type questions in plain English in the search box (e.g. "What is SSR?", "How do I use Server Components?").
+- **View answers**: The app shows an AI-generated answer plus source chunks from the docs.
+- **Theme**: Use the theme switcher in the header for light/dark mode.
+
+The same `/api/retrieve` endpoint powers this UI.
+
 ### API Endpoint
 
 The RAG system exposes a single API endpoint:
@@ -178,7 +188,7 @@ The RAG system exposes a single API endpoint:
 }
 ```
 
-#### Response
+#### Response (success)
 
 ```json
 {
@@ -193,6 +203,12 @@ The RAG system exposes a single API endpoint:
   ]
 }
 ```
+
+#### Error responses
+
+- **400** – Missing or invalid JSON, or `query` is empty.
+- **200 with `error`** – Request was accepted but no answer returned: query classified as off-topic, or no relevant chunks found (response includes a `suggestion`).
+- **500** – Server error (e.g. Supabase or OpenAI failure).
 
 ### Testing the API
 
@@ -282,15 +298,16 @@ The API handles various query formats:
 
 ## Scripts Reference
 
-| Script                      | Description                       |
-| --------------------------- | --------------------------------- |
-| `npm run dev`               | Start development server          |
-| `npm run build`             | Build for production              |
-| `npm run start`             | Start production server           |
-| `npm run fetch-nextjs-docs` | Download Next.js docs from GitHub |
-| `npm run chunk-nextjs-docs` | Split docs into chunks            |
-| `npm run embed-nextjs-docs` | Generate embeddings for chunks    |
-| `npm run upsert-embeddings` | Upload chunks to Supabase         |
+| Script                      | Description                          |
+| --------------------------- | ------------------------------------ |
+| `npm run dev`               | Start development server (Turbopack) |
+| `npm run build`             | Build for production (Turbopack)     |
+| `npm run start`             | Start production server              |
+| `npm run lint`              | Run ESLint                           |
+| `npm run fetch-nextjs-docs` | Download Next.js docs from GitHub    |
+| `npm run chunk-nextjs-docs` | Split docs into chunks               |
+| `npm run embed-nextjs-docs` | Generate embeddings for chunks       |
+| `npm run upsert-embeddings` | Upload chunks to Supabase            |
 
 ## Project Structure
 
@@ -298,21 +315,28 @@ The API handles various query formats:
 rag-powered-nextjs-docs/
 ├── web/
 │   ├── src/
-│   │   └── app/
-│   │       └── api/
-│   │           └── retrieve/
-│   │               └── route.ts      # RAG API endpoint
+│   │   ├── app/
+│   │   │   ├── api/
+│   │   │   │   └── retrieve/
+│   │   │   │       └── route.ts     # RAG API endpoint
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx              # Home page with search UI
+│   │   │   └── globals.css
+│   │   └── components/
+│   │       ├── DocSearch.tsx         # Search input and results
+│   │       └── ThemeSwitcher.tsx     # Light/dark theme toggle
 │   ├── scripts/
 │   │   ├── downloadDocs.js           # Download documentation
-│   │   ├── chunking.js                # Chunk markdown files
-│   │   ├── embedding.js               # Generate embeddings
+│   │   ├── chunking.js               # Chunk markdown files
+│   │   ├── embedding.js              # Generate embeddings
 │   │   └── upsertToSupabase.js       # Upload to Supabase
 │   ├── data/
 │   │   ├── nextjs-docs-markdown/     # Downloaded docs
 │   │   ├── nextjs-docs-chunks/       # Chunked docs
 │   │   └── nextjs-docs-paired-embeddings/ # Chunks + embeddings
 │   └── package.json
-└── README.md
+├── README.md
+└── LICENSE
 ```
 
 ## Troubleshooting
